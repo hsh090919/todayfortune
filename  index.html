@@ -1,95 +1,483 @@
-import streamlit as st
-import random
+# 🔮 오늘의 운세 웹페이지
 
-# 페이지 설정
-st.set_page_config(
-    page_title="오늘의 운세",
-    page_icon="🔮",
-    layout="centered"
-)
+아래 코드를 그대로 복사해서 GitHub 저장소에 **`index.html`**이라는 이름으로 저장하면 됩니다.
 
-# 운세 데이터
-fortunes = [
-    {
-        "text": "오늘은 새로운 기회가 찾아오는 날입니다! 주변 사람의 조언에 귀를 기울여보세요.",
-        "number": 7,
-        "color": "파란색",
-        "food": "떡볶이"
-    },
-    {
-        "text": "작은 행운이 연달아 찾아오는 하루입니다. 긍정적인 마음을 유지해보세요!",
-        "number": 3,
-        "color": "초록색",
-        "food": "김밥"
-    },
-    {
-        "text": "오늘은 집중력이 좋은 날입니다. 미뤄두었던 일을 해결하기 좋습니다.",
-        "number": 8,
-        "color": "노란색",
-        "food": "라면"
-    },
-    {
-        "text": "친구나 가족과 좋은 시간을 보내면 행복한 일이 생길 수 있습니다.",
-        "number": 5,
-        "color": "분홍색",
-        "food": "치킨"
-    },
-    {
-        "text": "새로운 것을 시작하기 좋은 날입니다. 자신감을 가지고 도전해보세요!",
-        "number": 9,
-        "color": "보라색",
-        "food": "피자"
+```html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>오늘의 운세 🔮</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 550px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 25px;
+            padding: 35px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .title h1 {
+            font-size: 32px;
+            margin: 0 0 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #777;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #667eea;
+        }
+
+        .mood-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .mood {
+            flex: 1;
+        }
+
+        .mood input {
+            display: none;
+        }
+
+        .mood label {
+            text-align: center;
+            padding: 14px 5px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: normal;
+            transition: 0.2s;
+        }
+
+        .mood input:checked + label {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .fortune-button {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .fortune-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .result {
+            display: none;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 2px solid #eee;
+        }
+
+        .result h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .fortune-text {
+            background: #f7f7ff;
+            padding: 20px;
+            border-radius: 15px;
+            line-height: 1.7;
+            text-align: center;
+            color: #444;
+        }
+
+        .info-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .info-box {
+            background: #fafafa;
+            border-radius: 15px;
+            padding: 15px 8px;
+            text-align: center;
+        }
+
+        .info-box .emoji {
+            font-size: 25px;
+        }
+
+        .info-box .label {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .info-box .value {
+            font-weight: bold;
+            margin-top: 5px;
+            color: #333;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff7e6;
+            border-radius: 12px;
+            text-align: center;
+            color: #555;
+        }
+
+        .error {
+            display: none;
+            color: #e74c3c;
+            margin-top: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 15px;
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 500px) {
+            .card {
+                padding: 25px 20px;
+            }
+
+            .title h1 {
+                font-size: 27px;
+            }
+
+            .info-container {
+                grid-template-columns: 1fr;
+            }
+
+            .mood-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <div class="title">
+            <h1>🔮 오늘의 운세</h1>
+        </div>
+
+        <div class="subtitle">
+            오늘 하루의 운세를 재미로 확인해보세요!
+        </div>
+
+        <!-- 이름 -->
+        <div class="section">
+            <label for="name">👤 이름을 입력하세요</label>
+            <input
+                type="text"
+                id="name"
+                placeholder="예: 홍길동"
+            >
+        </div>
+
+        <!-- 기분 -->
+        <div class="section">
+            <label>😊 오늘의 기분은 어떤가요?</label>
+
+            <div class="mood-container">
+
+                <div class="mood">
+                    <input
+                        type="radio"
+                        id="good"
+                        name="mood"
+                        value="good"
+                        checked
+                    >
+                    <label for="good">😊 좋음</label>
+                </div>
+
+                <div class="mood">
+                    <input
+                        type="radio"
+                        id="normal"
+                        name="mood"
+                        value="normal"
+                    >
+                    <label for="normal">😐 보통</label>
+                </div>
+
+                <div class="mood">
+                    <input
+                        type="radio"
+                        id="bad"
+                        name="mood"
+                        value="bad"
+                    >
+                    <label for="bad">😢 별로</label>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 버튼 -->
+        <button
+            class="fortune-button"
+            onclick="showFortune()"
+        >
+            🔮 운세 확인하기
+        </button>
+
+        <div class="error" id="error">
+            이름을 먼저 입력해주세요!
+        </div>
+
+        <!-- 결과 -->
+        <div class="result" id="result">
+
+            <h2 id="resultTitle">
+                ✨ 오늘의 운세
+            </h2>
+
+            <div class="fortune-text" id="fortuneText">
+            </div>
+
+            <div class="info-container">
+
+                <div class="info-box">
+                    <div class="emoji">🍀</div>
+                    <div class="label">행운의 숫자</div>
+                    <div class="value" id="luckyNumber"></div>
+                </div>
+
+                <div class="info-box">
+                    <div class="emoji">🎨</div>
+                    <div class="label">행운의 색</div>
+                    <div class="value" id="luckyColor"></div>
+                </div>
+
+                <div class="info-box">
+                    <div class="emoji">🍴</div>
+                    <div class="label">행운의 음식</div>
+                    <div class="value" id="luckyFood"></div>
+                </div>
+
+            </div>
+
+            <div class="message" id="message">
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="footer">
+        🔮 재미로 보는 오늘의 운세
+    </div>
+
+</div>
+
+
+<script>
+
+    // 운세 데이터
+    const fortunes = [
+
+        {
+            text: "오늘은 새로운 기회가 찾아오는 날입니다! 주변 사람의 조언에 귀를 기울여보세요.",
+            number: 7,
+            color: "파란색",
+            food: "떡볶이"
+        },
+
+        {
+            text: "작은 행운이 연달아 찾아오는 하루입니다. 긍정적인 마음을 유지해보세요!",
+            number: 3,
+            color: "초록색",
+            food: "김밥"
+        },
+
+        {
+            text: "오늘은 집중력이 좋은 날입니다. 미뤄두었던 일을 해결하기 좋은 날입니다.",
+            number: 8,
+            color: "노란색",
+            food: "라면"
+        },
+
+        {
+            text: "친구나 가족과 좋은 시간을 보내면 행복한 일이 생길 수 있습니다.",
+            number: 5,
+            color: "분홍색",
+            food: "치킨"
+        },
+
+        {
+            text: "새로운 것을 시작하기 좋은 날입니다. 자신감을 가지고 도전해보세요!",
+            number: 9,
+            color: "보라색",
+            food: "피자"
+        }
+
+    ];
+
+
+    function showFortune() {
+
+        const name = document.getElementById("name").value.trim();
+
+        const error = document.getElementById("error");
+
+        const result = document.getElementById("result");
+
+        // 이름이 없을 경우
+        if (name === "") {
+
+            error.style.display = "block";
+
+            result.style.display = "none";
+
+            return;
+        }
+
+        error.style.display = "none";
+
+        // 랜덤 운세 선택
+        const randomIndex =
+            Math.floor(Math.random() * fortunes.length);
+
+        const fortune =
+            fortunes[randomIndex];
+
+
+        // 결과 표시
+        document.getElementById("resultTitle").innerText =
+            `✨ ${name}님의 오늘의 운세`;
+
+        document.getElementById("fortuneText").innerText =
+            fortune.text;
+
+        document.getElementById("luckyNumber").innerText =
+            fortune.number;
+
+        document.getElementById("luckyColor").innerText =
+            fortune.color;
+
+        document.getElementById("luckyFood").innerText =
+            fortune.food;
+
+
+        // 기분에 따른 메시지
+        const mood =
+            document.querySelector(
+                'input[name="mood"]:checked'
+            ).value;
+
+
+        let message = "";
+
+
+        if (mood === "good") {
+
+            message =
+                "🌈 기분이 좋은 날이니 오늘의 행운을 마음껏 즐겨보세요!";
+
+        } else if (mood === "normal") {
+
+            message =
+                "☀️ 작은 일에서도 즐거움을 찾아보세요!";
+
+        } else {
+
+            message =
+                "💙 오늘은 너무 무리하지 말고 자신을 위한 시간을 가져보세요.";
+
+        }
+
+
+        document.getElementById("message").innerText =
+            message;
+
+
+        // 결과 보여주기
+        result.style.display = "block";
+
+
+        // 결과 위치로 이동
+        result.scrollIntoView({
+            behavior: "smooth"
+        });
+
     }
-]
 
-# 제목
-st.title("🔮 오늘의 운세")
-st.write("오늘 하루의 운세를 재미로 확인해보세요!")
+</script>
 
-st.divider()
-
-# 이름 입력
-name = st.text_input("👤 이름을 입력하세요")
-
-# 기분 선택
-mood = st.radio(
-    "😊 오늘의 기분은 어떤가요?",
-    ["좋음 😊", "보통 😐", "별로 😢"]
-)
-
-st.write("")
-
-# 버튼
-if st.button("🔮 운세 확인하기"):
-
-    if name == "":
-        st.warning("이름을 먼저 입력해주세요!")
-    else:
-        fortune = random.choice(fortunes)
-
-        st.success(f"{name}님의 오늘의 운세입니다!")
-
-        st.subheader("✨ 오늘의 운세")
-        st.write(fortune["text"])
-
-        st.divider()
-
-        col1, col2, col3 = st.columns(3)
-
-        with col1:
-            st.metric("🍀 행운의 숫자", fortune["number"])
-
-        with col2:
-            st.metric("🎨 행운의 색", fortune["color"])
-
-        with col3:
-            st.metric("🍴 행운의 음식", fortune["food"])
-
-        st.divider()
-
-        if mood == "좋음 😊":
-            st.info("기분이 좋은 날이니 오늘의 행운을 마음껏 즐겨보세요! 🌈")
-        elif mood == "보통 😐":
-            st.info("작은 일에도 즐거움을 찾아보세요! ☀️")
-        else:
-            st.info("오늘은 너무 무리하지 말고 자신을 위한 시간을 가져보세요. 💙")
+</body>
+</html>
+```
